@@ -148,15 +148,6 @@ PUT    /api/tasks/{id}                   # 태스크 수정
 PATCH  /api/tasks/{id}/status            # 태스크 상태 변경
 DELETE /api/tasks/{id}                   # 태스크 삭제
 ```
-
-## 📄 라이선스
-
-This project is licensed under the MIT License.
-
-## 👥 기여하기
-
-프로젝트에 기여하고 싶으시다면 Pull Request를 보내주세요. 모든 기여를 환영합니다!
-
 ---
 
 **[메가존 클라우드 인턴십]** 칸반 보드 프로젝트

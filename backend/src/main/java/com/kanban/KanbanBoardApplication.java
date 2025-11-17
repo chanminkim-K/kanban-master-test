@@ -4,19 +4,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Kanban Board Application - Main Entry Point
+ * 칸반 보드 애플리케이션 - 메인 진입점
  *
- * This is the main Spring Boot application class for the Kanban Board project.
- * It initializes and runs the Spring application context with all required configurations.
+ * 칸반 보드 프로젝트의 메인 Spring Boot 애플리케이션 클래스입니다.
+ * 필요한 모든 설정과 함께 Spring 애플리케이션 컨텍스트를 초기화하고 실행합니다.
  *
- * Technology Stack:
+ * 기술 스택:
  * - Java 17
  * - Spring Boot 3.2.0
  * - Spring Data JPA
  * - Spring Security
  * - H2 Database
  *
- * @author Megazone Cloud Internship
+ * @author 메가존 클라우드 인턴십
  * @version 1.0
  */
 @SpringBootApplication
@@ -25,9 +25,9 @@ public class KanbanBoardApplication {
     public static void main(String[] args) {
         SpringApplication.run(KanbanBoardApplication.class, args);
         System.out.println("===========================================");
-        System.out.println("   Kanban Board Application Started!");
-        System.out.println("   Backend Server: http://localhost:8080");
-        System.out.println("   H2 Console: http://localhost:8080/h2-console");
+        System.out.println("   칸반 보드 애플리케이션이 시작되었습니다!");
+        System.out.println("   백엔드 서버: http://localhost:8080");
+        System.out.println("   H2 콘솔: http://localhost:8080/h2-console");
         System.out.println("===========================================");
     }
 }

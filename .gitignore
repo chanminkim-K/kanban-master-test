@@ -1,0 +1,92 @@
+# 운영체제
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node.js (프론트엔드)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# 프론트엔드 빌드 출력
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/node_modules/
+
+# 환경 변수
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Java / Gradle (백엔드)
+backend/.gradle/
+backend/build/
+backend/out/
+backend/bin/
+backend/.settings/
+backend/.classpath
+backend/.project
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# Gradle Wrapper (선택사항: gradlew 파일은 보통 포함하지만, 이미 있으면 제외)
+# backend/gradle/
+# backend/gradlew
+# backend/gradlew.bat
+
+# Spring Boot
+backend/target/
+backend/logs/
+
+# IntelliJ IDEA
+*.iml
+*.iws
+*.ipr
+
+# Eclipse
+.metadata
+.recommenders
+
+# H2 데이터베이스 파일 (인메모리 사용 시 불필요하지만 파일 모드 사용 시 제외)
+*.db
+*.mv.db
+*.trace.db
+
+# 로그 파일
+*.log
+
+# 임시 파일
+*.tmp
+*.bak
+*.swp
+*~.nib
+nul
+
+# 패키지 파일
+*.tar.gz
+*.zip
+*.rar
+
+# 테스트 커버리지
+coverage/
+*.lcov
+.nyc_output/
+
+# Claude Code
+.claude/

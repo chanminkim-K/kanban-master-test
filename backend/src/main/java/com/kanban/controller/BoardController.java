@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,15 +22,16 @@ import java.util.List;
  * Base URL: /api/boards
  *
  * API 엔드포인트:
- * - POST   /api/boards              보드 생성
- * - GET    /api/boards              모든 보드 조회
- * - GET    /api/boards/{id}         특정 보드 조회
- * - PUT    /api/boards/{id}         보드 수정
- * - DELETE /api/boards/{id}         보드 삭제
+ * - POST   /api/boards              보드 생성 (JWT 인증 필요)
+ * - GET    /api/boards              모든 보드 조회 (JWT 인증 필요)
+ * - GET    /api/boards/{id}         특정 보드 조회 (JWT 인증 필요)
+ * - PUT    /api/boards/{id}         보드 수정 (JWT 인증 필요)
+ * - DELETE /api/boards/{id}         보드 삭제 (JWT 인증 필요)
  *
- * 참고:
- * - 현재는 userId를 쿼리 파라미터로 받지만, 추후 JWT 인증 구현 시
- *   SecurityContext에서 자동으로 추출하도록 변경 예정
+ * 인증:
+ * - JWT 토큰을 Authorization 헤더에 포함하여 요청해야 합니다.
+ * - 형식: "Authorization: Bearer {token}"
+ * - SecurityContext에서 사용자 ID를 자동으로 추출합니다.
  *
  * @author 메가존 클라우드 인턴십
  */
@@ -43,15 +46,19 @@ public class BoardController {
     /**
      * 새로운 보드를 생성합니다.
      *
+     * JWT 토큰에서 사용자 ID를 추출하여 보드를 생성합니다.
+     *
      * @param request 보드 생성 요청 DTO
-     * @param userId 보드를 생성하는 사용자 ID (임시, 추후 JWT에서 추출)
      * @return 생성된 보드 정보와 HTTP 201 상태 코드
      */
     @PostMapping
     public ResponseEntity<BoardDTO> createBoard(
-            @Valid @RequestBody BoardDTO.CreateRequest request,
-            @RequestParam(name = "userId") Long userId) {
+            @Valid @RequestBody BoardDTO.CreateRequest request) {
         log.info("POST /api/boards - 보드 생성 요청: {}", request.getTitle());
+
+        // SecurityContext에서 인증된 사용자 ID 추출
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
 
         BoardDTO createdBoard = boardService.createBoard(request, userId);
 
@@ -63,12 +70,16 @@ public class BoardController {
     /**
      * 특정 사용자의 모든 보드를 조회합니다.
      *
-     * @param userId 사용자 ID (임시, 추후 JWT에서 추출)
+     * JWT 토큰에서 사용자 ID를 추출하여 해당 사용자의 보드 목록을 조회합니다.
+     *
      * @return 보드 목록과 HTTP 200 상태 코드
      */
     @GetMapping
-    public ResponseEntity<List<BoardDTO>> getAllBoards(
-            @RequestParam(name = "userId") Long userId) {
+    public ResponseEntity<List<BoardDTO>> getAllBoards() {
+        // SecurityContext에서 인증된 사용자 ID 추출
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
+
         log.info("GET /api/boards - 보드 목록 조회 요청, 사용자 ID: {}", userId);
 
         List<BoardDTO> boards = boardService.getAllBoards(userId);
@@ -94,17 +105,21 @@ public class BoardController {
     /**
      * 보드 정보를 수정합니다.
      *
+     * JWT 토큰에서 사용자 ID를 추출하여 권한을 확인하고 보드를 수정합니다.
+     *
      * @param id 보드 ID
      * @param request 보드 수정 요청 DTO
-     * @param userId 요청한 사용자 ID (임시, 추후 JWT에서 추출)
      * @return 수정된 보드 정보와 HTTP 200 상태 코드
      */
     @PutMapping("/{id}")
     public ResponseEntity<BoardDTO> updateBoard(
             @PathVariable Long id,
-            @Valid @RequestBody BoardDTO.UpdateRequest request,
-            @RequestParam(name = "userId") Long userId) {
+            @Valid @RequestBody BoardDTO.UpdateRequest request) {
         log.info("PUT /api/boards/{} - 보드 수정 요청", id);
+
+        // SecurityContext에서 인증된 사용자 ID 추출
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
 
         BoardDTO updatedBoard = boardService.updateBoard(id, request, userId);
 
@@ -114,15 +129,18 @@ public class BoardController {
     /**
      * 보드를 삭제합니다.
      *
+     * JWT 토큰에서 사용자 ID를 추출하여 권한을 확인하고 보드를 삭제합니다.
+     *
      * @param id 보드 ID
-     * @param userId 요청한 사용자 ID (임시, 추후 JWT에서 추출)
      * @return HTTP 204 상태 코드 (No Content)
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(
-            @PathVariable Long id,
-            @RequestParam(name = "userId") Long userId) {
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
         log.info("DELETE /api/boards/{} - 보드 삭제 요청", id);
+
+        // SecurityContext에서 인증된 사용자 ID 추출
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
 
         boardService.deleteBoard(id, userId);
 

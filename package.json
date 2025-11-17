@@ -1,0 +1,25 @@
+{
+  "name": "kanban-board",
+  "version": "1.0.0",
+  "description": "칸반 보드 애플리케이션 - React + Spring Boot",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && .\\gradlew.bat bootRun",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && .\\gradlew.bat build"
+  },
+  "keywords": [
+    "kanban",
+    "board",
+    "react",
+    "spring-boot",
+    "typescript"
+  ],
+  "author": "메가존 클라우드 인턴십",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -80,6 +80,35 @@ public class Task {
     private LocalDateTime updatedAt;
 
     /**
+     * 태스크 정보를 업데이트합니다 (제목, 설명).
+     *
+     * @param title 새 제목
+     * @param description 새 설명
+     */
+    public void updateInfo(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
+    /**
+     * 태스크 상태를 변경합니다.
+     *
+     * @param status 새 상태
+     */
+    public void updateStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * 태스크 위치를 변경합니다.
+     *
+     * @param position 새 위치
+     */
+    public void updatePosition(Integer position) {
+        this.position = position;
+    }
+
+    /**
      * 태스크 상태 Enum
      *
      * 칸반 워크플로우에서 태스크의 현재 상태를 나타냅니다.

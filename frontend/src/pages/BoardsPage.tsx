@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getAllBoards, createBoard, deleteBoard } from '../services/boardService';
+import { getAllBoards, createBoard, updateBoard, deleteBoard } from '../services/boardService';
 import { Board } from '../types';
 
 const BoardsPage: React.FC = () => {
@@ -19,6 +19,10 @@ const BoardsPage: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newBoardTitle, setNewBoardTitle] = useState('');
   const [newBoardDescription, setNewBoardDescription] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingBoard, setEditingBoard] = useState<Board | null>(null);
+  const [editBoardTitle, setEditBoardTitle] = useState('');
+  const [editBoardDescription, setEditBoardDescription] = useState('');
   const [error, setError] = useState('');
 
   // 보드 목록 로드
@@ -55,6 +59,37 @@ const BoardsPage: React.FC = () => {
       loadBoards();
     } catch (err: any) {
       setError(err.response?.data?.message || '보드 생성에 실패했습니다.');
+    }
+  };
+
+  // 보드 수정 모달 열기
+  const handleEditClick = (board: Board) => {
+    setEditingBoard(board);
+    setEditBoardTitle(board.title);
+    setEditBoardDescription(board.description || '');
+    setShowEditModal(true);
+  };
+
+  // 보드 수정
+  const handleUpdateBoard = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBoard) return;
+
+    setError('');
+
+    try {
+      await updateBoard(editingBoard.id, {
+        title: editBoardTitle,
+        description: editBoardDescription || undefined,
+      });
+
+      setEditBoardTitle('');
+      setEditBoardDescription('');
+      setEditingBoard(null);
+      setShowEditModal(false);
+      loadBoards();
+    } catch (err: any) {
+      setError(err.response?.data?.message || '보드 수정에 실패했습니다.');
     }
   };
 
@@ -198,7 +233,19 @@ const BoardsPage: React.FC = () => {
                 </div>
 
                 {/* 보드 액션 */}
-                <div className="border-t border-gray-100 px-6 py-3 bg-gray-50 flex justify-end">
+                <div className="border-t border-gray-100 px-6 py-3 bg-gray-50 flex justify-end gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditClick(board);
+                    }}
+                    className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold flex items-center gap-1 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    
+                  </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -209,7 +256,7 @@ const BoardsPage: React.FC = () => {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    삭제
+            
                   </button>
                 </div>
               </div>
@@ -287,6 +334,84 @@ const BoardsPage: React.FC = () => {
                   className="px-6 py-3 text-sm font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-lg hover:shadow-xl transition-all"
                 >
                   생성하기
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 보드 수정 모달 */}
+      {showEditModal && editingBoard && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full transform transition-all">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">보드 수정</h2>
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditBoardTitle('');
+                  setEditBoardDescription('');
+                  setEditingBoard(null);
+                  setError('');
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateBoard} className="space-y-5">
+              <div>
+                <label htmlFor="editTitle" className="block text-sm font-semibold text-gray-700 mb-2">
+                  보드 제목 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="editTitle"
+                  type="text"
+                  required
+                  value={editBoardTitle}
+                  onChange={(e) => setEditBoardTitle(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  placeholder="예: 웹사이트 리뉴얼 프로젝트"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="editDescription" className="block text-sm font-semibold text-gray-700 mb-2">
+                  설명
+                </label>
+                <textarea
+                  id="editDescription"
+                  value={editBoardDescription}
+                  onChange={(e) => setEditBoardDescription(e.target.value)}
+                  rows={4}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                  placeholder="보드에 대한 자세한 설명을 입력하세요..."
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditBoardTitle('');
+                    setEditBoardDescription('');
+                    setEditingBoard(null);
+                    setError('');
+                  }}
+                  className="px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-3 text-sm font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-lg hover:shadow-xl transition-all"
+                >
+                  저장하기
                 </button>
               </div>
             </form>
